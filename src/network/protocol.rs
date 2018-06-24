@@ -17,6 +17,8 @@
 #![allow(non_snake_case)]
 #![allow(missing_docs)]
 
+use std::net;
+
 use chrono::{DateTime, FixedOffset};
 
 use super::super::common;
@@ -39,6 +41,15 @@ protocol_enum! {
         Id = "id",
         Name = "name",
         UpdatedAt = "updated_at"
+    }
+}
+
+protocol_enum! {
+    #[doc = "Possible floating IP statuses."]
+    enum FloatingIpStatus {
+        Active = "ACTIVE",
+        Down = "DOWN",
+        Error = "ERROR"
     }
 }
 
@@ -89,4 +100,36 @@ pub struct NetworkRoot {
 #[derive(Debug, Clone, Deserialize)]
 pub struct NetworksRoot {
     pub networks: Vec<Network>
+}
+
+/// A floating IP.
+#[derive(Debug, Clone, Deserialize)]
+pub struct FloatingIp {
+    #[serde(default)]
+    pub created_at: Option<DateTime<FixedOffset>>,
+    #[serde(deserialize_with = "common::protocol::empty_as_none", default)]
+    pub description: Option<String>,
+    #[serde(deserialize_with = "common::protocol::empty_as_none", default)]
+    pub dns_domain: Option<String>,
+    #[serde(deserialize_with = "common::protocol::empty_as_none", default)]
+    pub dns_name: Option<String>,
+    #[serde(default)]
+    pub fixed_ip_address: Option<net::IpAddr>,
+    #[serde(default)]
+    pub floating_ip_address: Option<net::IpAddr>,
+    pub floating_network_id: String,
+    pub id: String,
+    #[serde(default)]
+    pub port_id: Option<String>,
+    #[serde(default)]
+    pub router_id: Option<String>,
+    pub status: FloatingIpStatus,
+    #[serde(default)]
+    pub updated_at: Option<DateTime<FixedOffset>>,
+}
+
+/// A floating IP.
+#[derive(Debug, Clone, Deserialize)]
+pub struct FloatingIpRoot {
+    pub floatingip: FloatingIp
 }

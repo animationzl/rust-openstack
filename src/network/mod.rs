@@ -15,8 +15,10 @@
 //! Network API implementation bits.
 
 mod base;
+mod floatingips;
 mod networks;
 mod protocol;
 
+pub use self::floatingips::FloatingIp;
 pub use self::networks::{Network, NetworkQuery};
-pub use self::protocol::{NetworkStatus, NetworkSortKey};
+pub use self::protocol::{FloatingIpStatus, NetworkStatus, NetworkSortKey};

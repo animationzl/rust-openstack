@@ -29,6 +29,9 @@ use super::protocol;
 
 /// Extensions for Session.
 pub trait V2API {
+    /// Get a floating IP.
+    fn get_floating_ip<S: AsRef<str>>(&self, id: S) -> Result<protocol::FloatingIp>;
+
     /// Get a network.
     fn get_network<S: AsRef<str>>(&self, id_or_name: S) -> Result<protocol::Network> {
         let s = id_or_name.as_ref();
@@ -57,6 +60,16 @@ const VERSION_ID: &'static str = "v2.0";
 
 
 impl V2API for Session {
+    fn get_floating_ip<S: AsRef<str>>(&self, id: S) -> Result<protocol::FloatingIp> {
+        trace!("Get floating IP by ID {}", id.as_ref());
+        let floatingip = self.request::<V2>(Method::Get,
+                                            &["floatingips", id.as_ref()],
+                                            None)?
+           .receive_json::<protocol::FloatingIpRoot>()?.floatingip;
+        trace!("Received {:?}", floatingip);
+        Ok(floatingip)
+    }
+
     fn get_network_by_id<S: AsRef<str>>(&self, id: S) -> Result<protocol::Network> {
         trace!("Get network by ID {}", id.as_ref());
         let network = self.request::<V2>(Method::Get,
